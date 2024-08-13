@@ -21,9 +21,8 @@ stages:
   name: 'MySelfHostedPool'  # Ensure this matches your agent pool name
     steps:
     - task: Docker@2
-      displayName: Build an image
       inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
-        tags: |
-          $(tag)
+        containerRegistry: 'docker'
+        repository: 'nizarmlaouihi/my-repo'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
