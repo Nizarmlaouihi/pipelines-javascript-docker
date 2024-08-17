@@ -45,4 +45,4 @@ stages:
         strategy: 'canary'
         percentage: '0'
         manifests: |
-          $(Pipeline.Workspace)/manifests/deployment.yaml
+          $(Pipeline.Workspace)/deployment.yaml
