@@ -1,7 +1,3 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - main
 
@@ -17,12 +13,35 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-   pool:
-  name: 'MySelfHostedPool'  # Ensure this matches your agent pool name
+    pool:
+      name: 'MySelfHostedPool'  # Ensure this matches your agent pool name
     steps:
     - task: Docker@2
       inputs:
-        containerRegistry: 'docker'
+        containerRegistry: 'docker'  # Name of your Docker Hub service connection
         repository: 'nizarmlaouihi/my-repo'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
+        tags: '$(tag)'
+
+- stage: Deploy
+  displayName: Deploy to AKS
+  jobs:
+  - job: Deploy
+    displayName: Deploy to AKS
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: KubectlInstaller@0
+      inputs:
+        kubectlVersion: 'latest'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'java-docker-test'  # Ensure this matches your service connection name
+        namespace: 'test'
+        command: 'apply'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Others'  # Use 'Others' for Docker Hub
+        arguments: '-f ./your-deployment.yaml'  # Path to the deployment YAML at the root
