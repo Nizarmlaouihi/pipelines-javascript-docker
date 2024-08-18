@@ -17,3 +17,5 @@ spec:
         image: nizarmlaouihi/my-repo:latest
         ports:
         - containerPort: 80
+      imagePullSecrets:
+      - name: dockerhub-secret
