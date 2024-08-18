@@ -14,7 +14,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: 'MySelfHostedPool'  # Ensure this matches your self-hosted agent pool name
+     vmImage: 'ubuntu-latest'  # Ensure this matches your self-hosted agent pool name
     steps:
     - task: Docker@2
       inputs:
