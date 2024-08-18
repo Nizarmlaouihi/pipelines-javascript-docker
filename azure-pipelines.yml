@@ -14,7 +14,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: 'MySelfHostedPool'  # Ensure this matches your agent pool name
+      name: 'MySelfHostedPool'  # Ensure this matches your self-hosted agent pool name
     steps:
     - task: Docker@2
       inputs:
@@ -30,7 +30,7 @@ stages:
   - job: Deploy
     displayName: Deploy to AKS
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-latest'  # Microsoft-hosted agent image
     steps:
     - task: KubectlInstaller@0
       inputs:
@@ -44,4 +44,4 @@ stages:
         command: 'apply'
         secretType: 'dockerRegistry'
         containerRegistryType: 'Others'  # Use 'Others' for Docker Hub
-        arguments: '-f ./your-deployment.yaml'  # Path to the deployment YAML at the root
+        arguments: '-f ./deployment.yaml'  # Path to the deployment YAML at the root
