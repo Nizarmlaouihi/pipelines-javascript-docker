@@ -14,23 +14,23 @@ stages:
   - job: Build
     displayName: Build
     pool:
-     vmImage: 'ubuntu-latest'  # Ensure this matches your self-hosted agent pool name
+      vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
       inputs:
-        containerRegistry: 'docker'  # Name of your Docker Hub service connection
+        containerRegistry: 'docker'  
         repository: 'nizarmlaouihi/my-repo'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '$(tag)'
 
 - stage: Deploy
-  displayName: Deploy to AKS
+  displayName: Deploy to AKS with LoadBalancer
   jobs:
   - job: Deploy
     displayName: Deploy to AKS
     pool:
-      vmImage: 'ubuntu-latest'  # Microsoft-hosted agent image
+      vmImage: 'ubuntu-latest'
     steps:
     - task: KubectlInstaller@0
       inputs:
@@ -39,9 +39,17 @@ stages:
     - task: Kubernetes@1
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'java-docker-test'  # Ensure this matches your service connection name
+        kubernetesServiceEndpoint: 'java-docker-test'
         namespace: 'test'
         command: 'apply'
         secretType: 'dockerRegistry'
-        containerRegistryType: 'Others'  # Use 'Others' for Docker Hub
-        arguments: '-f ./deployment.yaml'  # Path to the deployment YAML at the root
+        containerRegistryType: 'Others'
+        arguments: '-f ./deployment.yaml'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'java-docker-test'
+        namespace: 'test'
+        command: 'apply'
+        arguments: '-f ./service.yaml'  # Assuming your service.yaml defines a LoadBalancer
